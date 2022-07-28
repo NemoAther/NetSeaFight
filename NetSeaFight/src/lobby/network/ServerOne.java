@@ -30,23 +30,12 @@ public class ServerOne extends Thread {
                 if (str.equals("exit")) {
                     working = false;
                 }
-                //System.out.println("hasMessage: " + hasMessage);
-                //System.out.println("message: " + message);
-                //System.out.println("game: " + game);
-                System.out.println("game.turn: " + game.turn);
-                if (game != null && !hasMessage) {
-                    if (game.turn == playerInGameID) {
-                        //System.out.println("Получено: " + str);
-                        //out.println(str);
-                        message = str;
-                        System.out.println("Отправлено: " + message);
-                        hasMessage = true;
-                        //System.out.println("hasMessage: " + hasMessage);
-                    } else {
-                        //System.out.println("Не твой ход, а ты тут пишешь: " + str);
-                        out.println("Не твой ход, а ты тут пишешь");
-                    }
-
+                if (game != null && !hasMessage && game.turn == playerInGameID) {
+                    message = str;
+                    System.out.println("Отправлено: " + message);
+                    hasMessage = true;
+                } else {
+                    out.println("Не твой ход, а ты тут пишешь");
                 }
             }
             System.out.println("Соединение закрыто");
@@ -71,5 +60,8 @@ public class ServerOne extends Thread {
 
     public void setGame(GameServer game) {
         this.game = game;
+    }
+    synchronized void setMessage(String message) {
+        out.println(message);
     }
 }
