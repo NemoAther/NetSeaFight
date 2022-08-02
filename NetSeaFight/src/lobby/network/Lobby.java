@@ -1,5 +1,6 @@
 package lobby.network;
 
+import gameserver.GameServer;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 public class Lobby implements Runnable {
 
     private static final int PORT = 6666;
-    private ArrayList<ServerOne> serverOnes = new ArrayList<>();
+    private ArrayList<PlayerMirror> serverOnes = new ArrayList<>();
     private ArrayList<GameServer> games = new ArrayList<>();
 
     private void startLobby() throws IOException {
@@ -17,10 +18,10 @@ public class Lobby implements Runnable {
         try {
             while (true) {
                 Socket socket = s.accept();
-                ServerOne serverOne;
+                PlayerMirror serverOne;
                 try {
                     System.out.println("Попытка входа в лобби");
-                    serverOne = new ServerOne(socket);
+                    serverOne = new PlayerMirror(socket);
                     serverOnes.add(serverOne);
                     System.out.println("Новое соединение установлено");
 
