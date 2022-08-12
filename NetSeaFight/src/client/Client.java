@@ -1,11 +1,17 @@
 package client;
 
+import client.GUI.MainWindow;
 import java.io.*;
 import java.net.*;
 
 public class Client {
 
     public static void main(String[] args) throws IOException {
+        MainWindow mainWindow = new MainWindow();
+        mainWindow.createGUI();
+        
+        
+        
         System.out.println("Клиент стартовал");
         String address = "localhost";
         int port = 6666;
@@ -14,7 +20,7 @@ public class Client {
         ClientReceiver receiver = new ClientReceiver(server);
         Thread clientReceiver = new Thread(receiver);
         clientReceiver.start();
-        
+
         System.out.println("Соединяемся с сервером " + address + ":" + port);
 
         PrintWriter sender = new PrintWriter(server.getOutputStream(), true);
