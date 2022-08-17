@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 
 /**
@@ -14,6 +17,7 @@ public class FightField extends JPanel implements Runnable {
 
     int gridSize = 10;
     int cellSize = 30;
+    final int fieldSize = cellSize * 12;
     public static final int CANVAS_WIDTH = 800;
     public static final int CANVAS_HEIGHT = 600;
     Point cursor = new Point(0, 0);
@@ -22,12 +26,37 @@ public class FightField extends JPanel implements Runnable {
     volatile int x2 = 5;
     volatile int y2 = 5;
 
+    int whatDragged = 0;
+
     int xSelect = 0;
     int ySelect = 0;
 
     public FightField() {
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (x1 < fieldSize) {
+                    //работаем с полем 
+                }
+                if (x1 >= fieldSize) {
+                    hangarOnClick();//работаем с ангаром
+                }
+            }
+        });
+        this.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                cursor = e.getLocationOnScreen();
+                x1 = e.getX();
+                y1 = e.getY();
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+            }
+        });
         Thread redraw = new Thread(this);
         redraw.start();
     }
@@ -42,9 +71,7 @@ public class FightField extends JPanel implements Runnable {
 //почитать про буфферед имейдж
 
     void draw(Graphics g) {
-        //g.setColor(Color.red);
-        //g.drawLine(x1, y1, x2, y2);
-        //g.drawRect(x1, y1, x2, y2);
+
         drawGrid(g);
         g.setColor(Color.red);
         if (x1 > cellSize && x1 < cellSize * (gridSize + 1)) {
@@ -55,6 +82,10 @@ public class FightField extends JPanel implements Runnable {
         }
         g.drawRect(xSelect, ySelect, cellSize, cellSize);
         drawShipHangar(g);
+
+        if (whatDragged > 0) {
+            drawShipOnCursor(g);
+        }
 
     }
 
@@ -67,28 +98,40 @@ public class FightField extends JPanel implements Runnable {
         }
     }
 
+    private void drawShipOnCursor(Graphics g) {
+        g.setColor(Color.white);
+        g.fillRect(x1, y1, cellSize * 4, cellSize);
+        g.setColor(Color.black);
+        g.drawLine(x1 + cellSize * 1, y1, x1 + cellSize * 1, y1 + cellSize);
+        g.drawLine(x1 + cellSize * 2, y1, x1 + cellSize * 2, y1 + cellSize);
+        g.drawLine(x1 + cellSize * 3, y1, x1 + cellSize * 3, y1 + cellSize);
+
+        //g.fillRect(x1, y1, 10, 10);
+    }
+
     private void drawShipHangar(Graphics g) {
+
         //4-хклеточный
         g.setColor(Color.white);
-        g.fillRect(500, cellSize, cellSize * 4, cellSize);
+        g.fillRect(fieldSize, cellSize, cellSize * 4, cellSize);
         g.setColor(Color.black);
-        g.drawLine(500 + cellSize, cellSize, 500 + cellSize, cellSize * 2);
-        g.drawLine(500 + cellSize * 2, cellSize, 500 + cellSize * 2, cellSize * 2);
-        g.drawLine(500 + cellSize * 3, cellSize, 500 + cellSize * 3, cellSize * 2);
+        g.drawLine(fieldSize + cellSize, cellSize, fieldSize + cellSize, cellSize * 2);
+        g.drawLine(fieldSize + cellSize * 2, cellSize, fieldSize + cellSize * 2, cellSize * 2);
+        g.drawLine(fieldSize + cellSize * 3, cellSize, fieldSize + cellSize * 3, cellSize * 2);
         //3-хклеточный
         g.setColor(Color.white);
-        g.fillRect(500, cellSize * 3, cellSize * 3, cellSize);
+        g.fillRect(fieldSize, cellSize * 3, cellSize * 3, cellSize);
         g.setColor(Color.black);
-        g.drawLine(500 + cellSize, cellSize * 3, 500 + cellSize, cellSize * 4);
-        g.drawLine(500 + cellSize * 2, cellSize * 3, 500 + cellSize * 2, cellSize * 4);
+        g.drawLine(fieldSize + cellSize, cellSize * 3, fieldSize + cellSize, cellSize * 4);
+        g.drawLine(fieldSize + cellSize * 2, cellSize * 3, fieldSize + cellSize * 2, cellSize * 4);
         //2-хклеточный
         g.setColor(Color.white);
-        g.fillRect(500, cellSize * 5, cellSize * 2, cellSize);
+        g.fillRect(fieldSize, cellSize * 5, cellSize * 2, cellSize);
         g.setColor(Color.black);
-        g.drawLine(500 + cellSize, cellSize * 5, 500 + cellSize, cellSize * 6);
+        g.drawLine(fieldSize + cellSize, cellSize * 5, fieldSize + cellSize, cellSize * 6);
         //1-клеточный
         g.setColor(Color.white);
-        g.fillRect(500, cellSize * 7, cellSize, cellSize);
+        g.fillRect(fieldSize, cellSize * 7, cellSize, cellSize);
     }
 
     @Override
@@ -96,5 +139,27 @@ public class FightField extends JPanel implements Runnable {
         super.paintComponent(g);  // paint background
         setBackground(Color.BLACK);
         draw(g);
+    }
+
+    public int getGridSize() {
+        return gridSize;
+    }
+
+    public int getCellSize() {
+        return cellSize;
+    }
+
+    public int getFieldSize() {
+        return fieldSize;
+    }
+
+    private void hangarOnClick() {
+        if (x1 >= fieldSize && x1 <= fieldSize + cellSize * 4 && y1 >= cellSize && y1 <= cellSize * 2) {
+            System.out.println("клик в ангаре");
+            if (whatDragged == 0) {
+                whatDragged = 4;
+
+            }
+        }
     }
 }
