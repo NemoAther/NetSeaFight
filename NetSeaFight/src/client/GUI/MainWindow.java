@@ -20,8 +20,8 @@ public class MainWindow extends JFrame {
 
     public void createGUI() {
         setLayout(new FlowLayout());
-        FightField fightField = new FightField();
-        add(fightField);
+        GameScreen gameScreen = new GameScreen();
+        add(gameScreen);
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();

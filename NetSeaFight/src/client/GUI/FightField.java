@@ -1,95 +1,85 @@
 package client.GUI;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 
 /**
  *
  * @author ksmnote
  */
-public class FightField extends JPanel implements Runnable {
+public class FightField extends JPanel {
 
-    int gridSize = 10;
-    int cellSize = 30;
-    final int fieldSize = cellSize * 12;
-    public static final int CANVAS_WIDTH = 800;
-    public static final int CANVAS_HEIGHT = 600;
-    Point cursor = new Point(0, 0);
-    volatile int x1 = 0;
-    volatile int y1 = 0;
-    volatile int x2 = 5;
-    volatile int y2 = 5;
+    private GameScreen gameScreen;
 
-    int whatDragged = 0;
+    private final int gridSize;
+    private final int cellSize;
+    private final int fieldSize;
+    //public static final int CANVAS_WIDTH = 800;
+    //public static final int CANVAS_HEIGHT = 600;
+    //Point cursor = new Point(0, 0);
+    //volatile int x1 = 0;
+    //volatile int y1 = 0;
+    //volatile int x2 = 5;
+    //volatile int y2 = 5;
 
+    //int whatDragged = 0;
     int xSelect = 0;
     int ySelect = 0;
+    int xSelect2 = 0;
+    int ySelect2 = 0;
 
-    public FightField() {
-        setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
-
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (x1 < fieldSize) {
-                    //работаем с полем 
-                }
-                if (x1 >= fieldSize) {
-                    hangarOnClick();//работаем с ангаром
-                }
-            }
-        });
-        this.addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                cursor = e.getLocationOnScreen();
-                x1 = e.getX();
-                y1 = e.getY();
-            }
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-            }
-        });
-        Thread redraw = new Thread(this);
-        redraw.start();
+    //ShipHangar hangar;
+    public FightField(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
+        cellSize = gameScreen.getCellSize();
+        fieldSize = cellSize * 12;
+        gridSize = gameScreen.getGridSize();
+        //Thread redraw = new Thread(this);
+        //redraw.start();
     }
 
-    @Override
+    /*@Override
     public void run() {
         while (true) {
             repaint();
 
         }
-    }
+    }*/
 //почитать про буфферед имейдж
-
     void draw(Graphics g) {
 
         drawGrid(g);
         g.setColor(Color.red);
-        if (x1 > cellSize && x1 < cellSize * (gridSize + 1)) {
-            if (y1 > cellSize && y1 < cellSize * (gridSize + 1)) {
-                xSelect = ((int) x1 / cellSize) * cellSize;
-                ySelect = ((int) y1 / cellSize) * cellSize;
+        if (gameScreen.getCursorX() > cellSize && gameScreen.getCursorX() < cellSize * (gridSize + 1)) {
+            if (gameScreen.getCursorY() > cellSize && gameScreen.getCursorY() < cellSize * (gridSize + 1)) {
+                xSelect = ((int) gameScreen.getCursorX() / cellSize) * cellSize;
+                ySelect = ((int) gameScreen.getCursorX() / cellSize) * cellSize;
             }
         }
         g.drawRect(xSelect, ySelect, cellSize, cellSize);
         drawShipHangar(g);
 
-        if (whatDragged > 0) {
-            drawShipOnCursor(g);
-        }
-
     }
 
-    private void drawGrid(Graphics g) {
+    void drawSelected(Graphics g) {
+        System.out.println(gameScreen.getCursorX() + " " + gameScreen.getCursorY() + " " + gameScreen.getPoint().getX() + " " + gameScreen.getLocation().getY());
+        g.setColor(Color.red);
+        if (gameScreen.getCursorX() > cellSize && gameScreen.getCursorX() < cellSize * (gridSize + 1)) {
+            if (gameScreen.getCursorY() > cellSize && gameScreen.getCursorY() < cellSize * (gridSize + 1)) {
+                xSelect = ((int)gameScreen.getCursorX() / cellSize) * cellSize;
+                ySelect = ((int)gameScreen.getCursorY() / cellSize) * cellSize;
+                xSelect2 = gameScreen.getCursorX();
+                ySelect2 = gameScreen.getCursorY();
+            }
+        }
+        g.drawRect(xSelect, ySelect, cellSize, cellSize);
+        g.setColor(Color.green);
+        g.drawRect(xSelect2, ySelect2, cellSize, cellSize);
+        
+    }
+
+    void drawGrid(Graphics g) {
         g.setColor(Color.yellow);
         //g.drawLine(10, 10, 310, 10);
         for (int i = 1; i < gridSize + 2; i++) {
@@ -100,11 +90,11 @@ public class FightField extends JPanel implements Runnable {
 
     private void drawShipOnCursor(Graphics g) {
         g.setColor(Color.white);
-        g.fillRect(x1, y1, cellSize * 4, cellSize);
+        g.fillRect(gameScreen.getCursorX(), gameScreen.getCursorY(), cellSize * 4, cellSize);
         g.setColor(Color.black);
-        g.drawLine(x1 + cellSize * 1, y1, x1 + cellSize * 1, y1 + cellSize);
-        g.drawLine(x1 + cellSize * 2, y1, x1 + cellSize * 2, y1 + cellSize);
-        g.drawLine(x1 + cellSize * 3, y1, x1 + cellSize * 3, y1 + cellSize);
+        g.drawLine(gameScreen.getCursorX() + cellSize * 1, gameScreen.getCursorY(), gameScreen.getCursorX() + cellSize * 1, gameScreen.getCursorY() + cellSize);
+        g.drawLine(gameScreen.getCursorX() + cellSize * 2, gameScreen.getCursorY(), gameScreen.getCursorX() + cellSize * 2, gameScreen.getCursorY() + cellSize);
+        g.drawLine(gameScreen.getCursorX() + cellSize * 3, gameScreen.getCursorY(), gameScreen.getCursorX() + cellSize * 3, gameScreen.getCursorY() + cellSize);
 
         //g.fillRect(x1, y1, 10, 10);
     }
@@ -136,9 +126,9 @@ public class FightField extends JPanel implements Runnable {
 
     @Override
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);  // paint background
-        setBackground(Color.BLACK);
-        draw(g);
+        //super.paintComponent(g);  // paint background
+        //setBackground(Color.BLACK);
+        //draw(g);
     }
 
     public int getGridSize() {
@@ -153,13 +143,13 @@ public class FightField extends JPanel implements Runnable {
         return fieldSize;
     }
 
-    private void hangarOnClick() {
-        if (x1 >= fieldSize && x1 <= fieldSize + cellSize * 4 && y1 >= cellSize && y1 <= cellSize * 2) {
+    /*private void hangarOnClick() {
+        if (gameScreen.getCursorX() >= fieldSize && gameScreen.getCursorX() <= fieldSize + cellSize * 4 && y1 >= cellSize && y1 <= cellSize * 2) {
             System.out.println("клик в ангаре");
             if (whatDragged == 0) {
                 whatDragged = 4;
 
             }
         }
-    }
+    }*/
 }
