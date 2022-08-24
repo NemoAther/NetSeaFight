@@ -25,13 +25,13 @@ public class GameScreen extends JPanel implements Runnable {
     int whatDragged = 1; //0-ничего, 1 - одноклеточный, 2 - двухклеточный, 3 - трехклеточный, 4 - четрыехклеточный
 
     FightField fightField;
-    ShipHangar hangar;
+    ShipHangar shipHangar;
 
     GameScreen() {
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
         fightField = new FightField(this);
-        hangar = new ShipHangar(this);
+        shipHangar = new ShipHangar(this);
 
         addMouseMove();
         addMouseClick();
@@ -44,7 +44,6 @@ public class GameScreen extends JPanel implements Runnable {
     public void run() {
         while (true) {
             repaint();
-
         }
     }
 
@@ -69,7 +68,7 @@ public class GameScreen extends JPanel implements Runnable {
                     //работаем с полем 
                 }
                 if (cursor.getX() >= fightField.getFieldSize()) {
-                    hangar.hangarOnClick();//работаем с ангаром
+                    shipHangar.hangarOnClick();//работаем с ангаром
                 }
             }
         });
@@ -78,24 +77,12 @@ public class GameScreen extends JPanel implements Runnable {
 //почитать про буфферед имейдж
     void draw(Graphics g) {
 
-        fightField.drawGrid(g);
-        fightField.drawSelected(g);
+        fightField.draw(g);
+        shipHangar.draw(g);
         if (whatDragged > 0) {
-            //hangar.drawShipOnCursor(g);
+            shipHangar.drawShipOnCursor(g);
         }
 
-    }
-
-    /*private void drawGrid(Graphics g) {
-        g.setColor(Color.yellow);
-        for (int i = 1; i < gridSize + 2; i++) {
-            g.drawLine(cellSize, i * cellSize, cellSize * (gridSize + 1), i * cellSize);
-            g.drawLine(i * cellSize, cellSize, i * cellSize, cellSize * (gridSize + 1));
-        }
-    }*/
-
-    private void drawShipOnCursor(Graphics g) {
-        g.setColor(Color.white);
     }
 
     @Override
@@ -122,5 +109,8 @@ public class GameScreen extends JPanel implements Runnable {
     }
     public Point getPoint() {
         return cursor;
+    }
+    public int getWhatDragged() {
+        return whatDragged;
     }
 }
