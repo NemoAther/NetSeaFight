@@ -1,5 +1,6 @@
 package client.GUI;
 
+import client.Collision;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -21,6 +22,7 @@ public class GameScreen extends JPanel implements Runnable {
     private final int CANVAS_WIDTH = 800;
     private final int CANVAS_HEIGHT = 600;
     private volatile Point cursor = new Point(0, 0);
+    private final Collision collision;
 
     int whatDragged = 1; //0-ничего, 1 - одноклеточный, 2 - двухклеточный, 3 - трехклеточный, 4 - четрыехклеточный
 
@@ -32,7 +34,7 @@ public class GameScreen extends JPanel implements Runnable {
 
         fightField = new FightField(this);
         shipHangar = new ShipHangar(this);
-
+        collision = new Collision(fightField.getCellSize(), fightField.getFieldSize());
         addMouseMove();
         addMouseClick();
 
@@ -64,12 +66,15 @@ public class GameScreen extends JPanel implements Runnable {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (cursor.getX() < fightField.getFieldSize()) {
+                System.out.println("mouse pressed");
+                collision.getCollision(cursor.getX(), cursor.getY());
+                
+                /*if (cursor.getX() < fightField.getFieldSize()) {
                     //работаем с полем 
                 }
                 if (cursor.getX() >= fightField.getFieldSize()) {
                     shipHangar.hangarOnClick();//работаем с ангаром
-                }
+                }*/
             }
         });
     }
@@ -101,15 +106,17 @@ public class GameScreen extends JPanel implements Runnable {
     }
 
     public int getCursorX() {
-        return (int)cursor.getX();
+        return (int) cursor.getX();
     }
 
     public int getCursorY() {
-        return (int)cursor.getY();
+        return (int) cursor.getY();
     }
+
     public Point getPoint() {
         return cursor;
     }
+
     public int getWhatDragged() {
         return whatDragged;
     }
