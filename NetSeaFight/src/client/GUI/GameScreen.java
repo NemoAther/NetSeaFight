@@ -1,6 +1,7 @@
 package client.GUI;
 
 import client.Collision;
+import client.FightFieldController;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -24,17 +25,21 @@ public class GameScreen extends JPanel implements Runnable {
     private volatile Point cursor = new Point(0, 0);
     private final Collision collision;
 
-    int whatDragged = 1; //0-ничего, 1 - одноклеточный, 2 - двухклеточный, 3 - трехклеточный, 4 - четрыехклеточный
+    int whatDragged = 3; //0-ничего, 1 - одноклеточный, 2 - двухклеточный, 3 - трехклеточный, 4 - четрыехклеточный
 
-    FightField fightField;
+    FightFieldGUI fightFieldGUI;
+    FightFieldController fightFieldController;
     ShipHangar shipHangar;
 
     GameScreen() {
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+        
+        fightFieldController = new FightFieldController(gridSize);
+        fightFieldGUI = new FightFieldGUI(this);
 
-        fightField = new FightField(this);
+        collision = new Collision(cellSize, fightFieldGUI.getFieldSize(), fightFieldController);
         shipHangar = new ShipHangar(this);
-        collision = new Collision(fightField.getCellSize(), fightField.getFieldSize());
+
         addMouseMove();
         addMouseClick();
 
@@ -67,8 +72,8 @@ public class GameScreen extends JPanel implements Runnable {
             @Override
             public void mousePressed(MouseEvent e) {
                 System.out.println("mouse pressed");
-                collision.getCollision(cursor.getX(), cursor.getY());
-                
+                collision.getCollision(cursor.getX(), cursor.getY(), whatDragged, 0); //форма пока всегда горизонтальная
+
                 /*if (cursor.getX() < fightField.getFieldSize()) {
                     //работаем с полем 
                 }
@@ -82,8 +87,9 @@ public class GameScreen extends JPanel implements Runnable {
 //почитать про буфферед имейдж
     void draw(Graphics g) {
 
-        fightField.draw(g);
-        shipHangar.draw(g);
+        fightFieldGUI.draw(g);
+        shipHangar.draw(g);        
+        
         if (whatDragged > 0) {
             shipHangar.drawShipOnCursor(g);
         }

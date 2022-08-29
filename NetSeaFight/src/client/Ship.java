@@ -10,11 +10,13 @@ package client;
  * @author ksmnote
  */
 public class Ship {
+//класс нужен только для кораблей в процессе расстановки
 
-    private int[][] shipCells;
+    private final int[][] shipCells;
 
     public Ship(int[][] shipCells) {
-        this.shipCells = shipCells;
+        this.shipCells = shipCells; //координаты головы и смещения относительно головы в остальных клетках.
+        //для "поднятых" кораблей головой будет становиться левая верхняя клетка или же корабль будет просто удаляться в ангар
     }
 
     public int[][] getShipCells() {
@@ -25,18 +27,7 @@ public class Ship {
         return shipCells.length;
     }
 
-    public int[] getShoot(int[] shipCell) {
-        for (int i = 0; i < shipCells.length; i++) {
-            if (shipCells[i][0] == shipCell[0] && shipCells[i][1] == shipCell[1]) {
-                return shipCell;
-            }
-        }
-        return null; //null - промах
-    }
-
-    public boolean getCollision(Ship anotherShip) {
-
-        return true;
+    public void getAuraCollision(Ship ship) {
     }
 
 }

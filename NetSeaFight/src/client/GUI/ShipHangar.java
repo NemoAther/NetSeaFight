@@ -21,7 +21,7 @@ public class ShipHangar {
     ShipHangar(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         cellSize = gameScreen.getCellSize();
-        hangarPosition = gameScreen.fightField.getFieldSize() + cellSize;
+        hangarPosition = gameScreen.fightFieldGUI.getFieldSize() + cellSize;
     }
 
     public void draw(Graphics g) {
@@ -32,7 +32,7 @@ public class ShipHangar {
         drawShip(g, gameScreen.getCursorX(), gameScreen.getCursorY(), gameScreen.getWhatDragged());
     }
 
-    private void drawShip(Graphics g, int positionX, int positionY, int shipSize) {
+    public void drawShip(Graphics g, int positionX, int positionY, int shipSize) {
         g.setColor(Color.white);
         g.fillRect(positionX, positionY, cellSize * shipSize, cellSize);
         g.setColor(Color.black);

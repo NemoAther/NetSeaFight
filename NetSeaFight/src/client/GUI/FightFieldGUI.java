@@ -8,7 +8,7 @@ import javax.swing.JPanel;
  *
  * @author ksmnote
  */
-public class FightField {
+public class FightFieldGUI {
 
     private final GameScreen gameScreen;
 
@@ -19,7 +19,7 @@ public class FightField {
     int xSelect = 0;
     int ySelect = 0;
 
-    public FightField(GameScreen gameScreen) {
+    public FightFieldGUI(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         cellSize = gameScreen.getCellSize();
         fieldSize = cellSize * 12;
@@ -51,6 +51,9 @@ public class FightField {
         }
     }
 
+    void drawShips(Graphics g) {
+        
+    }
 
     public int getGridSize() {
         return gridSize;
