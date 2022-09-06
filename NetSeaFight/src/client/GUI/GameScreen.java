@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -17,15 +18,15 @@ import javax.swing.JPanel;
  */
 public class GameScreen extends JPanel implements Runnable {
 
-    final int gridSize = 10;
-    final int cellSize = 30;
-    //final int fieldSize = cellSize * 12;
+    private final int gridSize = 10;
+    private final int cellSize = 30;
     private final int CANVAS_WIDTH = 800;
     private final int CANVAS_HEIGHT = 600;
     private volatile Point cursor = new Point(0, 0);
     private final Collision collision;
 
-    int whatDragged = 3; //0-ничего, 1 - одноклеточный, 2 - двухклеточный, 3 - трехклеточный, 4 - четрыехклеточный
+    private int draggedSize = 0; //0-ничего, 1 - одноклеточный, 2 - двухклеточный, 3 - трехклеточный, 4 - четрыехклеточный
+    private int draggedForm = 0; //0 - горизонтальный, 1 - вертикальный
 
     FightFieldGUI fightFieldGUI;
     FightFieldController fightFieldController;
@@ -33,7 +34,7 @@ public class GameScreen extends JPanel implements Runnable {
 
     GameScreen() {
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
-        
+
         fightFieldController = new FightFieldController(gridSize);
         fightFieldGUI = new FightFieldGUI(this);
 
@@ -71,26 +72,48 @@ public class GameScreen extends JPanel implements Runnable {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                System.out.println("mouse pressed");
-                collision.getCollision(cursor.getX(), cursor.getY(), whatDragged, 0); //форма пока всегда горизонтальная
-
-                /*if (cursor.getX() < fightField.getFieldSize()) {
-                    //работаем с полем 
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    if (draggedForm == 0) {
+                        draggedForm = 1;
+                    } else if (draggedForm == 1) {
+                        draggedForm = 0;
+                    }
                 }
-                if (cursor.getX() >= fightField.getFieldSize()) {
-                    shipHangar.hangarOnClick();//работаем с ангаром
-                }*/
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    if (cursor.getX() < fightFieldGUI.getFieldSize()) {
+                        collision.getCollision(cursor.getX(), cursor.getY(), draggedSize, draggedForm);
+                    }
+                    if (cursor.getX() >= fightFieldGUI.getFieldSize()) {
+                        shipHangar.hangarOnClick(cursor.getX(), cursor.getY(), draggedSize, draggedForm);//работаем с ангаром
+                    }
+                }
             }
         });
+    }
+
+    public void getCollision(double cursorX, double cursorY, int sizeDragged, int formDragged) {
+        int[] cellIndex = getCellIndex(cursorX, cursorY); //получаем координаты не в пикселях, а в ячейках
+        if (draggedSize == 0) {
+            fightFieldController.getShoot(cellIndex);
+        } else {
+            //fightFieldController.placeShip(new Ship());
+        }
+    }
+
+    public int[] getCellIndex(double cursorX, double cursorY) {
+        int[] cellIndex = new int[2];
+        cellIndex[0] = (int) (cursorX / cellSize);
+        cellIndex[1] = (int) (cursorY / cellSize);
+        return cellIndex;
     }
 
 //почитать про буфферед имейдж
     void draw(Graphics g) {
 
-        fightFieldGUI.draw(g);
-        shipHangar.draw(g);        
-        
-        if (whatDragged > 0) {
+        fightFieldGUI.draw(g, fightFieldController.getField());
+        shipHangar.draw(g);
+
+        if (draggedSize > 0) {
             shipHangar.drawShipOnCursor(g);
         }
 
@@ -123,7 +146,20 @@ public class GameScreen extends JPanel implements Runnable {
         return cursor;
     }
 
-    public int getWhatDragged() {
-        return whatDragged;
+    public int getDraggedSize() {
+        return draggedSize;
     }
+
+    public int getDraggedForm() {
+        return draggedForm;
+    }
+
+    public void setDraggedSize(int draggedSize) {
+        this.draggedSize = draggedSize;
+    }
+
+    public void setDraggedForm(int draggedForm) {
+        this.draggedForm = draggedForm;
+    }
+    
 }

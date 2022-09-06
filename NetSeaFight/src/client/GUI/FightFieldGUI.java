@@ -1,8 +1,8 @@
 package client.GUI;
 
+import client.CellState;
 import java.awt.Color;
 import java.awt.Graphics;
-import javax.swing.JPanel;
 
 /**
  *
@@ -22,22 +22,23 @@ public class FightFieldGUI {
     public FightFieldGUI(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         cellSize = gameScreen.getCellSize();
-        fieldSize = cellSize * 12;
+        fieldSize = cellSize * 10;
         gridSize = gameScreen.getGridSize();
     }
 
 //почитать про буфферед имейдж
-    void draw(Graphics g) {
+    void draw(Graphics g, CellState[][] field) {
+        drawField(g, field);
         drawGrid(g);
         drawSelected(g);
     }
 
     void drawSelected(Graphics g) {
         g.setColor(Color.red);
-        if (gameScreen.getCursorX() > cellSize && gameScreen.getCursorX() < cellSize * (gridSize + 1)) {
-            if (gameScreen.getCursorY() > cellSize && gameScreen.getCursorY() < cellSize * (gridSize + 1)) {
-                xSelect = ((int)gameScreen.getCursorX() / cellSize) * cellSize;
-                ySelect = ((int)gameScreen.getCursorY() / cellSize) * cellSize;
+        if (gameScreen.getCursorX() > 0 && gameScreen.getCursorX() < cellSize * gridSize) {
+            if (gameScreen.getCursorY() > 0 && gameScreen.getCursorY() < cellSize * gridSize) {
+                xSelect = ((int) gameScreen.getCursorX() / cellSize) * cellSize;
+                ySelect = ((int) gameScreen.getCursorY() / cellSize) * cellSize;
             }
         }
         g.drawRect(xSelect, ySelect, cellSize, cellSize);
@@ -45,16 +46,44 @@ public class FightFieldGUI {
 
     void drawGrid(Graphics g) {
         g.setColor(Color.yellow);
-        for (int i = 1; i < gridSize + 2; i++) {
-            g.drawLine(cellSize, i * cellSize, cellSize * (gridSize + 1), i * cellSize);
-            g.drawLine(i * cellSize, cellSize, i * cellSize, cellSize * (gridSize + 1));
+        for (int i = 0; i < gridSize + 1; i++) {
+            g.drawLine(0, i * cellSize, cellSize * gridSize, i * cellSize);
+            g.drawLine(i * cellSize, 0, i * cellSize, cellSize * gridSize);
         }
     }
 
-    void drawShips(Graphics g) {
-        
+    void drawField(Graphics g, CellState[][] field) {
+        g.setColor(Color.DARK_GRAY);
+        for (int column = 0; column < field.length; column++) {
+            for (int row = 0; row < field[0].length; row++) {
+                    drawFilledCell(g, column, row, field[column][row]);
+            }
+        }
     }
 
+    void drawFilledCell(Graphics g, int columnNumber, int rowNumber, CellState cellState) {
+        if (cellState == null) {
+            cellState = CellState.EMPTY;
+        }
+        switch (cellState) {
+            case SHIP:
+                g.setColor(Color.WHITE); break;
+            case SHIPAURA:
+                g.setColor(Color.GRAY); break;
+            case EMPTY:
+                g.setColor(Color.BLUE); break;
+            case MISS:
+                g.setColor(Color.RED); break;
+            case HIT:
+                g.setColor(Color.GREEN); break;
+            case MISSAURA:
+                g.setColor(Color.CYAN); break;
+        }
+        g.fillRect(columnNumber * cellSize, rowNumber * cellSize, cellSize, cellSize);
+    }
+
+    
+    
     public int getGridSize() {
         return gridSize;
     }

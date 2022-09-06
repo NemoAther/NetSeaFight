@@ -28,11 +28,11 @@ public class Collision {
             int[] cellIndex = getCellIndex(cursorX, cursorY); //получаем координаты не в пикселях, а в ячейках
             fightFieldController.getShoot(cellIndex);
         } else {
-            //работаем с ангаром или вражеским полем
+
         }
     }
 
-    int[] getCellIndex(double cursorX, double cursorY) {
+    public int[] getCellIndex(double cursorX, double cursorY) {
         int[] cellIndex = new int[2];
 
         cellIndex[0] = (int) (cursorX / cellSize);
