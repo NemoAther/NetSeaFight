@@ -26,31 +26,29 @@ public class FightFieldController {
         field[9][8] = CellState.SHIP;
     }
 
-    public void placeShip(Ship ship) { //превращаем "относительный" корабль в "абсолютный"
-        int x = ship.getShipCells()[0][0];
-        int y = ship.getShipCells()[0][1];
-        field[ship.getShipCells()[0][0]][ship.getShipCells()[0][1]] = CellState.SHIP; //установка головы корабля
-        for (int i = 0; i < ship.getShipSize(); i++) { //установка остальных клеток по смещению от головы
-            x = x + ship.getShipCells()[i][0];
-            y = y + ship.getShipCells()[i][1];
-
-            field[x][y] = CellState.SHIP;
-            if (i == 0) {
-                setAuraOne(x, y);
-            } else {
-                setAura(x, y, ship.getShipCells()[i][0], ship.getShipCells()[i][1]);
+    public void placeShip(int[] cellIndex, int shipSize, int shipForm) { //превращаем "относительный" корабль в "абсолютный"
+        if (field[cellIndex[0]][cellIndex[1]] == CellState.EMPTY || field[cellIndex[0]][cellIndex[1]] == null) {
+            int[][] shipCells = new int[shipSize][2];
+            for (int i = 0; i < shipSize; i++) {
+                System.out.print("shipForm " + shipForm);
+                switch (shipForm) {
+                    case 0:
+                        shipCells[i][0] = cellIndex[0] + i;
+                        shipCells[i][1] = cellIndex[1];
+                        break;
+                    case 1:
+                        shipCells[i][0] = cellIndex[0];
+                        shipCells[i][1] = cellIndex[1] + i;
+                        break;
+                }
+                System.out.print(shipCells[i][0] + " " + shipCells[i][1] + " ");
+                field[shipCells[i][0]][shipCells[i][1]] = CellState.SHIP; //ставим корабль на поле
+                
             }
-
+            System.out.println("");
+            Ship ship = new Ship(shipCells);
+            ships.add(ship); //кэшируем корабль, чтобы не искать его каждый раз
         }
-
-        //аура рисуется параллельно кораблю по алгоритму:
-        /*
-        если сдвиг +х, то рисуется три клетки вправо
-        если сдвиг -х, то рисуется три клетки влево
-        если сдвиг +у, то рисуется три клетки вниз
-        если сдвиг -у, то рисуется три клетки вверх
-        диагональных сдвигов не бывает.        
-         */
     }
 
     public void placeShipOLD(Ship ship) { //установка корабля после проверки коллизий
@@ -160,10 +158,6 @@ public class FightFieldController {
             field[cellIndex[0]][cellIndex[1]] = CellState.MISS;
             System.out.println("промазал!");
         }
-    }
-
-    public void getCollision(int[][] cellIndex) {
-
     }
 
     public CellState[][] getField() {

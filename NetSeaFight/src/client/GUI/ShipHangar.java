@@ -14,9 +14,9 @@ import java.awt.Graphics;
  */
 public class ShipHangar {
 
-    private GameScreen gameScreen;
-    private int hangarPosition;
-    private int cellSize;
+    private final GameScreen gameScreen;
+    private final int hangarPosition;
+    private final int cellSize;
 
     ShipHangar(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
@@ -42,9 +42,6 @@ public class ShipHangar {
                 drawVertical(g, positionX, positionY, shipSize);
                 break;
         }
-        /*for (int i = 1; i < shipSize; i++) {
-            g.drawLine(positionX + cellSize * i, positionY, positionX + cellSize * i, positionY + cellSize);
-        }*/
     }
 
     void drawHorizontal(Graphics g, int positionX, int positionY, int shipSize) {
@@ -64,33 +61,31 @@ public class ShipHangar {
     }
 
     private void drawShipHangar(Graphics g) {
-
         drawShip(g, hangarPosition, cellSize, 4, 0);
         drawShip(g, hangarPosition, cellSize * 3, 3, 0);
         drawShip(g, hangarPosition, cellSize * 5, 2, 0);
         drawShip(g, hangarPosition, cellSize * 7, 1, 0);
-
     }
 
     public void hangarOnClick(double cursorX, double cursorY, int sizeDragged, int formDragged) {
-        System.out.println("есть клик в ангаре");
-        if (cursorX > hangarPosition && cursorX <= hangarPosition + cellSize * 4) {
-            if (cursorY >= cellSize && cursorY <= cellSize * 2) {
-                gameScreen.setDraggedSize(4);
-                gameScreen.setDraggedForm(0);
+        if (sizeDragged == 0) {
+            if (cursorX > hangarPosition && cursorX <= hangarPosition + cellSize * 4) {
+                if (cursorY >= cellSize && cursorY <= cellSize * 2) {
+                    gameScreen.setDraggedSize(4);
+                }
+                if (cursorY >= cellSize * 3 && cursorY <= cellSize * 4) {
+                    gameScreen.setDraggedSize(3);
+                }
+                if (cursorY >= cellSize * 5 && cursorY <= cellSize * 6) {
+                    gameScreen.setDraggedSize(2);
+                }
+                if (cursorY >= cellSize * 7 && cursorY <= cellSize * 8) {
+                    gameScreen.setDraggedSize(1);
+                }
             }
-            if (cursorY >= cellSize * 3 && cursorY <= cellSize * 4) {
-                gameScreen.setDraggedSize(3);
-                gameScreen.setDraggedForm(0);
-            }
-            if (cursorY >= cellSize * 5 && cursorY <= cellSize * 6) {
-                gameScreen.setDraggedSize(2);
-                gameScreen.setDraggedForm(0);
-            }
-            if (cursorY >= cellSize * 7 && cursorY <= cellSize * 8) {
-                gameScreen.setDraggedSize(1);
-                gameScreen.setDraggedForm(0);
-            }
+        } else {
+            gameScreen.setDraggedSize(0);
         }
+        gameScreen.setDraggedForm(0);
     }
 }

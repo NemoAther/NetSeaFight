@@ -81,7 +81,7 @@ public class GameScreen extends JPanel implements Runnable {
                 }
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     if (cursor.getX() < fightFieldGUI.getFieldSize()) {
-                        collision.getCollision(cursor.getX(), cursor.getY(), draggedSize, draggedForm);
+                        getCollision(cursor.getX(), cursor.getY(), draggedSize, draggedForm);
                     }
                     if (cursor.getX() >= fightFieldGUI.getFieldSize()) {
                         shipHangar.hangarOnClick(cursor.getX(), cursor.getY(), draggedSize, draggedForm);//работаем с ангаром
@@ -96,7 +96,7 @@ public class GameScreen extends JPanel implements Runnable {
         if (draggedSize == 0) {
             fightFieldController.getShoot(cellIndex);
         } else {
-            //fightFieldController.placeShip(new Ship());
+            fightFieldController.placeShip(cellIndex, draggedSize, draggedForm);
         }
     }
 
