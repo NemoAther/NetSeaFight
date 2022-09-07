@@ -96,7 +96,7 @@ public class GameScreen extends JPanel implements Runnable {
         if (draggedSize == 0) {
             fightFieldController.getShoot(cellIndex);
         } else {
-            fightFieldController.placeShip(cellIndex, draggedSize, draggedForm);
+            fightFieldController.checkFreeSpace(cellIndex, draggedSize, draggedForm);
         }
     }
 

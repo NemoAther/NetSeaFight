@@ -18,16 +18,127 @@ public class FightFieldController {
     private final int gridSize;
 
     public FightFieldController(int gridSize) {
+        for (int columns = 0; columns < gridSize; columns++) {
+            for (int rows = 0; rows < gridSize; rows++) {
+                field[columns][rows] = CellState.EMPTY;
+            }
+        }
         this.gridSize = gridSize;
-        field[0][0] = CellState.SHIP;
-        field[5][5] = CellState.SHIP;
-        field[6][5] = CellState.SHIP;
-        field[9][9] = CellState.SHIP;
-        field[9][8] = CellState.SHIP;
     }
 
-    public void placeShip(int[] cellIndex, int shipSize, int shipForm) { //превращаем "относительный" корабль в "абсолютный"
-        if (field[cellIndex[0]][cellIndex[1]] == CellState.EMPTY || field[cellIndex[0]][cellIndex[1]] == null) {
+    public void checkFreeSpace(int[] cellIndex, int shipSize, int shipForm) {
+        switch (shipForm) {
+            case 0:
+                if (gridSize - cellIndex[0] - shipSize >= 0) {
+                    checkShipCollision(cellIndex, shipSize, shipForm);
+                }
+                break;
+            case 1:
+                if (gridSize - cellIndex[1] - shipSize >= 0) {
+                    checkShipCollision(cellIndex, shipSize, shipForm);
+                }
+                break;
+        }
+    }
+
+    public void checkShipCollision(int[] cellIndex, int shipSize, int shipForm) {
+        int check = 0;
+        for (int i = 0; i < shipSize; i++) {
+            switch (shipForm) {
+                case 0:
+                    if (checkNeighbours(cellIndex[0] + i, cellIndex[1])) {
+                        check++;
+                    }
+                    break;
+                case 1:
+                    if (checkNeighbours(cellIndex[0], cellIndex[1] + i)) {
+                        check++;
+                    }
+                    break;
+            }
+        }
+        if (check == shipSize) {
+            placeShip(cellIndex, shipSize, shipForm);
+        }
+    }
+
+    private boolean checkNeighbours(int x, int y) {
+        if (field[x][y] != CellState.EMPTY) {
+            System.out.println("field[x][y]" + field[x][y]);
+            System.out.println("test центр");
+            return false;
+        }
+        try {
+            if (field[x - 1][y - 1] != CellState.EMPTY) {
+                System.out.println("test левоверх");
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("выход за пределы массива, но все ок");
+        }
+        try {
+            if (field[x][y - 1] != CellState.EMPTY) {
+                System.out.println("test верхцентр");
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("выход за пределы массива, но все ок");
+        }
+        try {
+            if (field[x + 1][y - 1] != CellState.EMPTY) {
+                System.out.println("test верхправо");
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("выход за пределы массива, но все ок");
+        }
+        try {
+            if (field[x + 1][y] != CellState.EMPTY) {
+                System.out.println("test правоцентр");
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("выход за пределы массива, но все ок");
+        }
+        try {
+            if (field[x + 1][y + 1] != CellState.EMPTY) {
+                System.out.println("test правониз");
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("выход за пределы массива, но все ок");
+        }
+        try {
+            if (field[x][y + 1] != CellState.EMPTY) {
+                System.out.println("test низцентр");
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("выход за пределы массива, но все ок");
+        }
+        try {
+            if (field[x - 1][y + 1] != CellState.EMPTY) {
+                System.out.println("test низлево");
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("выход за пределы массива, но все ок");
+        }
+        try {
+            if (field[x - 1][y] != CellState.EMPTY) {
+                System.out.println("test левоцентр");
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("выход за пределы массива, но все ок");
+        }
+
+        System.out.println("test успешен");
+        return true;
+    }
+
+    private void placeShip(int[] cellIndex, int shipSize, int shipForm) { //превращаем "относительный" корабль в "абсолютный"
+        if (field[cellIndex[0]][cellIndex[1]] == CellState.EMPTY) {
             int[][] shipCells = new int[shipSize][2];
             for (int i = 0; i < shipSize; i++) {
                 System.out.print("shipForm " + shipForm);
@@ -43,39 +154,12 @@ public class FightFieldController {
                 }
                 System.out.print(shipCells[i][0] + " " + shipCells[i][1] + " ");
                 field[shipCells[i][0]][shipCells[i][1]] = CellState.SHIP; //ставим корабль на поле
-                
+
             }
             System.out.println("");
             Ship ship = new Ship(shipCells);
             ships.add(ship); //кэшируем корабль, чтобы не искать его каждый раз
         }
-    }
-
-    public void placeShipOLD(Ship ship) { //установка корабля после проверки коллизий
-        int x = ship.getShipCells()[0][0];
-        int y = ship.getShipCells()[0][1];
-        field[ship.getShipCells()[0][0]][ship.getShipCells()[0][1]] = CellState.SHIP; //установка головы корабля
-        for (int i = 0; i < ship.getShipSize(); i++) { //установка остальных клеток по смещению от головы
-            x = x + ship.getShipCells()[i][0];
-            y = y + ship.getShipCells()[i][1];
-
-            field[x][y] = CellState.SHIP;
-            if (i == 0) {
-                setAuraOne(x, y);
-            } else {
-                setAura(x, y, ship.getShipCells()[i][0], ship.getShipCells()[i][1]);
-            }
-
-        }
-
-        //аура рисуется параллельно кораблю по алгоритму:
-        /*
-        если сдвиг +х, то рисуется три клетки вправо
-        если сдвиг -х, то рисуется три клетки влево
-        если сдвиг +у, то рисуется три клетки вниз
-        если сдвиг -у, то рисуется три клетки вверх
-        диагональных сдвигов не бывает.        
-         */
     }
 
     private void setAuraOne(int x, int y) {
@@ -154,7 +238,7 @@ public class FightFieldController {
             field[cellIndex[0]][cellIndex[1]] = CellState.HIT;
             System.out.println("попал!");
         }
-        if (field[cellIndex[0]][cellIndex[1]] == CellState.EMPTY || field[cellIndex[0]][cellIndex[1]] == null) {
+        if (field[cellIndex[0]][cellIndex[1]] == CellState.EMPTY) {
             field[cellIndex[0]][cellIndex[1]] = CellState.MISS;
             System.out.println("промазал!");
         }

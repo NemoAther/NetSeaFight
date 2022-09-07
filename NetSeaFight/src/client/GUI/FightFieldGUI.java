@@ -62,9 +62,6 @@ public class FightFieldGUI {
     }
 
     void drawFilledCell(Graphics g, int columnNumber, int rowNumber, CellState cellState) {
-        if (cellState == null) {
-            cellState = CellState.EMPTY;
-        }
         switch (cellState) {
             case SHIP:
                 g.setColor(Color.WHITE); break;
@@ -82,8 +79,6 @@ public class FightFieldGUI {
         g.fillRect(columnNumber * cellSize, rowNumber * cellSize, cellSize, cellSize);
     }
 
-    
-    
     public int getGridSize() {
         return gridSize;
     }
@@ -95,14 +90,4 @@ public class FightFieldGUI {
     public int getFieldSize() {
         return fieldSize;
     }
-
-    /*private void hangarOnClick() {
-        if (gameScreen.getCursorX() >= fieldSize && gameScreen.getCursorX() <= fieldSize + cellSize * 4 && y1 >= cellSize && y1 <= cellSize * 2) {
-            System.out.println("клик в ангаре");
-            if (whatDragged == 0) {
-                whatDragged = 4;
-
-            }
-        }
-    }*/
 }
