@@ -94,9 +94,10 @@ public class GameScreen extends JPanel implements Runnable {
     public void getCollision(double cursorX, double cursorY, int sizeDragged, int formDragged) {
         int[] cellIndex = getCellIndex(cursorX, cursorY); //получаем координаты не в пикселях, а в ячейках
         if (draggedSize == 0) {
-            fightFieldController.getShoot(cellIndex);
+            //fightFieldController.getShoot(cellIndex);
+            fightFieldController.removeShip(cellIndex);
         } else {
-            fightFieldController.checkFreeSpace(cellIndex, draggedSize, draggedForm);
+            fightFieldController.addShip(cellIndex, draggedSize, draggedForm);
         }
     }
 

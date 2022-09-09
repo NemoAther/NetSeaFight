@@ -29,5 +29,4 @@ public class Ship {
 
     public void getAuraCollision(Ship ship) {
     }
-
 }
