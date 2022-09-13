@@ -26,107 +26,108 @@ public class FightFieldController {
         this.gridSize = gridSize;
     }
 
-    public void addShip(int[] cellIndex, int shipSize, int shipForm) {
-        checkFreeSpace(cellIndex, shipSize, shipForm);
-
+    public boolean addShip(int[] cellIndex, int shipSize, int shipForm) {
+        return checkFreeSpace(cellIndex, shipSize, shipForm);
     }
 
     public CellState[][] getField() {
         return field;
     }
 
-    public void removeShip(int[] cellIndex) {
+    public int removeShip(int[] cellIndex) {
         if (field[cellIndex[0]][cellIndex[1]] == CellState.SHIP) {
-            searchFullShip(cellIndex[0], cellIndex[1]);
+            int[][] shipCells = new int[1][2];
+            shipCells[0] = cellIndex;
+            System.out.println("клетка в начале = " + shipCells[0][0] + " " + shipCells[0][1]);
+            //int shipSize = 1;
+            int cellNumber = 0;
+            boolean continueSearch = true;
+            while (continueSearch) {
+                System.out.println("cellNumber=" + cellNumber);
+                shipCells = searchFullShip(shipCells, shipCells[cellNumber][0], shipCells[cellNumber][1]);
+                cellNumber++;
+                if (shipCells.length == cellNumber) {
+                    continueSearch = false;
+                }
+            }
+            for (int i = 0; i < shipCells.length; i++) {
+                field[shipCells[i][0]][shipCells[i][1]] = CellState.EMPTY;
+            }
+            return shipCells.length;
         }
+        return 0;
     }
 
-    private int[][] searchFullShip(int x, int y) {
-        int[][] shipCells = {{0},{x, y}};
-        try {
-            if (field[x - 1][y - 1] == CellState.SHIP) {
-                System.out.println("test левоверх");
-                return false;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("выход за пределы массива, но все ок");
-        }
+    private int[][] searchFullShip(int[][] shipCells, int x, int y) { //тут не клетка целиком для читаемости кода 
         try {
             if (field[x][y - 1] != CellState.EMPTY) {
-                System.out.println("test верхцентр");
-                return false;
+                shipCells = checkFindedShipCell(shipCells, new int[]{x, y - 1});
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("выход за пределы массива, но все ок");
-        }
-        try {
-            if (field[x + 1][y - 1] != CellState.EMPTY) {
-                System.out.println("test верхправо");
-                return false;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("выход за пределы массива, но все ок");
+            System.out.println("выход за пределы массива up, но все ок");
         }
         try {
             if (field[x + 1][y] != CellState.EMPTY) {
-                System.out.println("test правоцентр");
-                return false;
+                shipCells = checkFindedShipCell(shipCells, new int[]{x + 1, y});
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("выход за пределы массива, но все ок");
-        }
-        try {
-            if (field[x + 1][y + 1] != CellState.EMPTY) {
-                System.out.println("test правониз");
-                return false;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("выход за пределы массива, но все ок");
+            System.out.println("выход за пределы массива right, но все ок");
         }
         try {
             if (field[x][y + 1] != CellState.EMPTY) {
-                System.out.println("test низцентр");
-                return false;
+                shipCells = checkFindedShipCell(shipCells, new int[]{x, y + 1});
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("выход за пределы массива, но все ок");
-        }
-        try {
-            if (field[x - 1][y + 1] != CellState.EMPTY) {
-                System.out.println("test низлево");
-                return false;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("выход за пределы массива, но все ок");
+            System.out.println("выход за пределы массива down, но все ок");
         }
         try {
             if (field[x - 1][y] != CellState.EMPTY) {
-                System.out.println("test левоцентр");
-                return false;
+                shipCells = checkFindedShipCell(shipCells, new int[]{x - 1, y});
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("выход за пределы массива, но все ок");
+            System.out.println("выход за пределы массива left, но все ок");
         }
-
-        return null;
+        return shipCells;
     }
 
-    private void checkFreeSpace(int[] cellIndex, int shipSize, int shipForm) {
+    private int[][] checkFindedShipCell(int[][] shipCells, int[] shipCell) {
+        for (int i = 0; i < shipCells.length; i++) {
+            if (shipCells[i][0] == shipCell[0] && shipCells[i][1] == shipCell[1]) {
+                return shipCells;
+            }
+        }
+        return updateShipCells(shipCells, shipCell);
+    }
+
+    private int[][] updateShipCells(int[][] shipCells, int[] shipCell) {
+        int[][] shipCellsNew = new int[shipCells.length + 1][2];
+        for (int i = 0; i < shipCells.length; i++) {
+            shipCellsNew[i] = shipCells[i];
+            System.out.println("номер клетки=" + i + " клетка которая добавляется = " + shipCellsNew[i][0] + " " + shipCellsNew[i][1]);
+        }
+        shipCellsNew[shipCells.length] = shipCell; //последний индекс нового массива равен размеру старого
+        System.out.println("номер клетки=" + shipCells.length + "клетка которая добавляется = " + shipCellsNew[shipCells.length][0] + " " + shipCellsNew[shipCells.length][1]);
+        return shipCellsNew;
+    }
+
+    private boolean checkFreeSpace(int[] cellIndex, int shipSize, int shipForm) {
+        boolean placeResult = false;
         switch (shipForm) {
             case 0:
                 if (gridSize - cellIndex[0] - shipSize >= 0) {
-                    checkShipCollision(cellIndex, shipSize, shipForm);
+                    return checkShipCollision(cellIndex, shipSize, shipForm);
                 }
                 break;
             case 1:
                 if (gridSize - cellIndex[1] - shipSize >= 0) {
-                    checkShipCollision(cellIndex, shipSize, shipForm);
+                    return checkShipCollision(cellIndex, shipSize, shipForm);
                 }
                 break;
         }
+        return placeResult;
     }
 
-    private void checkShipCollision(int[] cellIndex, int shipSize, int shipForm) {
+    private boolean checkShipCollision(int[] cellIndex, int shipSize, int shipForm) {
         int check = 0;
         for (int i = 0; i < shipSize; i++) {
             switch (shipForm) {
@@ -144,18 +145,20 @@ public class FightFieldController {
         }
         if (check == shipSize) {
             placeShip(cellIndex, shipSize, shipForm);
+            return true;
         }
+        return false;
     }
 
     private boolean checkNeighbours(int x, int y) {
         if (field[x][y] != CellState.EMPTY) {
             System.out.println("field[x][y]" + field[x][y]);
-            System.out.println("test центр");
+            //System.out.println("test центр");
             return false;
         }
         try {
             if (field[x - 1][y - 1] != CellState.EMPTY) {
-                System.out.println("test левоверх");
+                //System.out.println("test левоверх");
                 return false;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -163,7 +166,7 @@ public class FightFieldController {
         }
         try {
             if (field[x][y - 1] != CellState.EMPTY) {
-                System.out.println("test верхцентр");
+                //System.out.println("test верхцентр");
                 return false;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -171,7 +174,7 @@ public class FightFieldController {
         }
         try {
             if (field[x + 1][y - 1] != CellState.EMPTY) {
-                System.out.println("test верхправо");
+                //System.out.println("test верхправо");
                 return false;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -179,7 +182,7 @@ public class FightFieldController {
         }
         try {
             if (field[x + 1][y] != CellState.EMPTY) {
-                System.out.println("test правоцентр");
+                //System.out.println("test правоцентр");
                 return false;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -187,7 +190,7 @@ public class FightFieldController {
         }
         try {
             if (field[x + 1][y + 1] != CellState.EMPTY) {
-                System.out.println("test правониз");
+                //System.out.println("test правониз");
                 return false;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -195,7 +198,7 @@ public class FightFieldController {
         }
         try {
             if (field[x][y + 1] != CellState.EMPTY) {
-                System.out.println("test низцентр");
+                //System.out.println("test низцентр");
                 return false;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -203,7 +206,7 @@ public class FightFieldController {
         }
         try {
             if (field[x - 1][y + 1] != CellState.EMPTY) {
-                System.out.println("test низлево");
+                //System.out.println("test низлево");
                 return false;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -211,14 +214,14 @@ public class FightFieldController {
         }
         try {
             if (field[x - 1][y] != CellState.EMPTY) {
-                System.out.println("test левоцентр");
+                //System.out.println("test левоцентр");
                 return false;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("выход за пределы массива, но все ок");
         }
 
-        System.out.println("test успешен");
+        //System.out.println("test успешен");
         return true;
     }
 
@@ -226,7 +229,7 @@ public class FightFieldController {
         if (field[cellIndex[0]][cellIndex[1]] == CellState.EMPTY) {
             int[][] shipCells = new int[shipSize][2];
             for (int i = 0; i < shipSize; i++) {
-                System.out.print("shipForm " + shipForm);
+                System.out.print("shipForm " + shipForm + " Coords:");
                 switch (shipForm) {
                     case 0:
                         shipCells[i][0] = cellIndex[0] + i;

@@ -95,9 +95,15 @@ public class GameScreen extends JPanel implements Runnable {
         int[] cellIndex = getCellIndex(cursorX, cursorY); //получаем координаты не в пикселях, а в ячейках
         if (draggedSize == 0) {
             //fightFieldController.getShoot(cellIndex);
-            fightFieldController.removeShip(cellIndex);
+            int removeResult = fightFieldController.removeShip(cellIndex);
+                draggedSize = removeResult;
+                draggedForm =0;
         } else {
-            fightFieldController.addShip(cellIndex, draggedSize, draggedForm);
+            boolean placeResult = fightFieldController.addShip(cellIndex, draggedSize, draggedForm);
+            if (placeResult) {
+                draggedSize = 0;
+                draggedForm =0;
+            }
         }
     }
 
