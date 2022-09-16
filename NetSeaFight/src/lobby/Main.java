@@ -4,7 +4,7 @@ import lobby.network.Lobby;
 
 /**
  *
- * @author ksmnote
+ * @author GAV
  */
 public class Main {
     

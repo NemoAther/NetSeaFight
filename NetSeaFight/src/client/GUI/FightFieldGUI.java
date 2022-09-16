@@ -6,7 +6,7 @@ import java.awt.Graphics;
 
 /**
  *
- * @author ksmnote
+ * @author GAV
  */
 public class FightFieldGUI {
 

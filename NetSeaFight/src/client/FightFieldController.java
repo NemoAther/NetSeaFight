@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package client;
 
 import java.util.ArrayList;
 
 /**
  *
- * @author ksmnote
+ * @author GAV
  */
 public class FightFieldController {
 
@@ -39,7 +34,6 @@ public class FightFieldController {
             int[][] shipCells = new int[1][2];
             shipCells[0] = cellIndex;
             System.out.println("клетка в начале = " + shipCells[0][0] + " " + shipCells[0][1]);
-            //int shipSize = 1;
             int cellNumber = 0;
             boolean continueSearch = true;
             while (continueSearch) {
@@ -249,78 +243,6 @@ public class FightFieldController {
             ships.add(ship); //кэшируем корабль, чтобы не искать его каждый раз
         }
     }
-
-    /*
-    private void setAuraOne(int x, int y) {
-        field[x - 1][y - 1] = CellState.SHIPAURA;
-        field[x][y - 1] = CellState.SHIPAURA;
-        field[x + 1][y - 1] = CellState.SHIPAURA;
-        field[x + 1][y] = CellState.SHIPAURA;
-        field[x + 1][y + 1] = CellState.SHIPAURA;
-        field[x][y + 1] = CellState.SHIPAURA;
-        field[x - 1][y + 1] = CellState.SHIPAURA;
-        field[x - 1][y] = CellState.SHIPAURA;
-    }
-
-    private void setAura(int x, int y, int x1, int y1) {
-        switch (x1) {
-            case -1:
-                setAuraLeft(x, y);
-                break;
-            case 1:
-                setAuraRight(x, y);
-                break;
-        }
-        switch (y1) {
-            case -1:
-                setAuraTop(x, y);
-                break;
-            case 1:
-                setAuraBottom(x, y);
-                break;
-        }
-    }
-
-    private void setAuraLeft(int x, int y) {
-        field[x - 1][y - 1] = CellState.SHIPAURA;
-        field[x - 1][y] = CellState.SHIPAURA;
-        field[x - 1][y + 1] = CellState.SHIPAURA;
-    }
-
-    private void setAuraRight(int x, int y) {
-        field[x + 1][y - 1] = CellState.SHIPAURA;
-        field[x + 1][y] = CellState.SHIPAURA;
-        field[x + 1][y + 1] = CellState.SHIPAURA;
-    }
-
-    private void setAuraTop(int x, int y) {
-        field[x - 1][y - 1] = CellState.SHIPAURA;
-        field[x][y - 1] = CellState.SHIPAURA;
-        field[x + 1][y - 1] = CellState.SHIPAURA;
-    }
-
-    private void setAuraBottom(int x, int y) {
-        field[x - 1][y + 1] = CellState.SHIPAURA;
-        field[x][y + 1] = CellState.SHIPAURA;
-        field[x + 1][y + 1] = CellState.SHIPAURA;
-    }
-
-    public void removeShip(Ship ship) {
-
-    }
-
-    private void refreshAura() {
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                if (field[i][j] == CellState.SHIP) {
-                    //чтобы рассчитать ауру нужно найти все корабли (записать их в виде "голова + смещения")
-                    //и провести по ним auraone+aura
-                    //иначе получится сложный рекурсивный алгоритм, который я до старости не напишу
-                    //корабли можно искать и по-очереди, главное запоминать все проверенные клетки чтоб повторов не было
-                }
-            }
-        }
-    }*/
     public void getShoot(int[] cellIndex) {
         if (field[cellIndex[0]][cellIndex[1]] == CellState.SHIP) {
             field[cellIndex[0]][cellIndex[1]] = CellState.HIT;
@@ -331,5 +253,4 @@ public class FightFieldController {
             System.out.println("промазал!");
         }
     }
-
 }

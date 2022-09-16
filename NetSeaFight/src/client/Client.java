@@ -4,14 +4,16 @@ import client.GUI.MainWindow;
 import java.io.*;
 import java.net.*;
 
+/**
+ *
+ * @author GAV
+ */
 public class Client {
 
     public static void main(String[] args) throws IOException {
         MainWindow mainWindow = new MainWindow();
         mainWindow.createGUI();
-        
-        
-        
+
         System.out.println("Клиент стартовал");
         String address = "localhost";
         int port = 6666;

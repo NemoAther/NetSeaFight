@@ -4,7 +4,7 @@ import lobby.network.PlayerMirror;
 
 /**
  *
- * @author ksmnote
+ * @author GAV
  */
 public class GameServer implements Runnable {
 

@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author ksmnote
+ * @author GAV
  */
 public class GameScreen extends JPanel implements Runnable {
 
@@ -23,7 +23,6 @@ public class GameScreen extends JPanel implements Runnable {
     private final int CANVAS_WIDTH = 800;
     private final int CANVAS_HEIGHT = 600;
     private volatile Point cursor = new Point(0, 0);
-    private final Collision collision;
 
     private int draggedSize = 0; //0-ничего, 1 - одноклеточный, 2 - двухклеточный, 3 - трехклеточный, 4 - четрыехклеточный
     private int draggedForm = 0; //0 - горизонтальный, 1 - вертикальный
@@ -38,7 +37,6 @@ public class GameScreen extends JPanel implements Runnable {
         fightFieldController = new FightFieldController(gridSize);
         fightFieldGUI = new FightFieldGUI(this);
 
-        collision = new Collision(cellSize, fightFieldGUI.getFieldSize(), fightFieldController);
         shipHangar = new ShipHangar(this);
 
         addMouseMove();
@@ -80,7 +78,7 @@ public class GameScreen extends JPanel implements Runnable {
                     }
                 }
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (cursor.getX() < fightFieldGUI.getFieldSize()) {
+                    if (cursor.getX() < fightFieldGUI.getFieldSize() && cursor.getY() < fightFieldGUI.getFieldSize()) {
                         getCollision(cursor.getX(), cursor.getY(), draggedSize, draggedForm);
                     }
                     if (cursor.getX() >= fightFieldGUI.getFieldSize()) {
@@ -96,13 +94,13 @@ public class GameScreen extends JPanel implements Runnable {
         if (draggedSize == 0) {
             //fightFieldController.getShoot(cellIndex);
             int removeResult = fightFieldController.removeShip(cellIndex);
-                draggedSize = removeResult;
-                draggedForm =0;
+            draggedSize = removeResult;
+            draggedForm = 0;
         } else {
             boolean placeResult = fightFieldController.addShip(cellIndex, draggedSize, draggedForm);
             if (placeResult) {
                 draggedSize = 0;
-                draggedForm =0;
+                draggedForm = 0;
             }
         }
     }
@@ -114,7 +112,6 @@ public class GameScreen extends JPanel implements Runnable {
         return cellIndex;
     }
 
-//почитать про буфферед имейдж
     void draw(Graphics g) {
 
         fightFieldGUI.draw(g, fightFieldController.getField());
@@ -168,5 +165,5 @@ public class GameScreen extends JPanel implements Runnable {
     public void setDraggedForm(int draggedForm) {
         this.draggedForm = draggedForm;
     }
-    
+
 }

@@ -2,7 +2,7 @@ package lobby.network;
 
 /**
  *
- * @author ksmnote
+ * @author GAV
  */
 public class ParseSignal {
     

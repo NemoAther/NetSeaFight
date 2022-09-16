@@ -1,27 +1,25 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package client.GUI;
 
+import client.ShipHangarController;
 import java.awt.Color;
 import java.awt.Graphics;
 
 /**
  *
- * @author ksmnote
+ * @author GAV
  */
 public class ShipHangar {
 
     private final GameScreen gameScreen;
     private final int hangarPosition;
     private final int cellSize;
+    private final ShipHangarController controller;
 
     ShipHangar(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         cellSize = gameScreen.getCellSize();
         hangarPosition = gameScreen.fightFieldGUI.getFieldSize() + cellSize;
+        controller = new ShipHangarController();
     }
 
     public void draw(Graphics g) {
@@ -71,19 +69,28 @@ public class ShipHangar {
         if (sizeDragged == 0) {
             if (cursorX > hangarPosition && cursorX <= hangarPosition + cellSize * 4) {
                 if (cursorY >= cellSize && cursorY <= cellSize * 2) {
-                    gameScreen.setDraggedSize(4);
+                    if (controller.getShip(4)) {
+                        gameScreen.setDraggedSize(4);
+                    }
                 }
                 if (cursorY >= cellSize * 3 && cursorY <= cellSize * 4) {
-                    gameScreen.setDraggedSize(3);
+                    if (controller.getShip(3)) {
+                        gameScreen.setDraggedSize(3);
+                    }
                 }
                 if (cursorY >= cellSize * 5 && cursorY <= cellSize * 6) {
-                    gameScreen.setDraggedSize(2);
+                    if (controller.getShip(2)) {
+                        gameScreen.setDraggedSize(2);
+                    }
                 }
                 if (cursorY >= cellSize * 7 && cursorY <= cellSize * 8) {
-                    gameScreen.setDraggedSize(1);
+                    if (controller.getShip(1)) {
+                        gameScreen.setDraggedSize(1);
+                    }
                 }
             }
         } else {
+            controller.returnShip(sizeDragged);
             gameScreen.setDraggedSize(0);
         }
         gameScreen.setDraggedForm(0);

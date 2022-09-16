@@ -3,7 +3,10 @@ package lobby.network;
 import gameserver.GameServer;
 import java.io.*;
 import java.net.*;
-
+/**
+ *
+ * @author GAV
+ */
 public class PlayerMirror implements Runnable {
 
     private Socket socket;

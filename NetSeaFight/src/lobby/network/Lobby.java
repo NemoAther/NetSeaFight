@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
+/**
+ *
+ * @author GAV
+ */
 public class Lobby implements Runnable {
 
     private static final int PORT = 6666;

@@ -7,7 +7,7 @@ import java.net.Socket;
 
 /**
  *
- * @author ksmnote
+ * @author GAV
  */
 public class ClientReceiver implements Runnable {
 
