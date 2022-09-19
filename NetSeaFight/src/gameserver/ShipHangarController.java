@@ -1,4 +1,4 @@
-package client;
+package gameserver;
 
 /**
  *
@@ -62,7 +62,7 @@ public class ShipHangarController {
         }
     }
 
-    public boolean getShipQuantity(int shipSize) {
+    public boolean getShipLast(int shipSize) {
         switch (shipSize) {
             case 1:
                 if (oneCellShip > 0) {
@@ -84,6 +84,13 @@ public class ShipHangarController {
                     return true;
                 }
                 break;
+        }
+        return false;
+    }
+
+    boolean isHangarEmpty() {
+        if (0== fourCellShip + threeCellShip + twoCellShip + oneCellShip) {
+            return true;
         }
         return false;
     }

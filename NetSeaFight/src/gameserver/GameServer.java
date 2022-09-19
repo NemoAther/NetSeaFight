@@ -40,6 +40,13 @@ public class GameServer implements Runnable {
             System.out.println("Игра началась");
             gameOn = true;
             turn = playerOne.getPlayerInGameID();
+            
+            ShipHangarController hangarOne = new ShipHangarController();
+            FieldController fieldOne = new FieldController();
+            
+            ShipHangarController hangarTwo = new ShipHangarController();
+            FieldController fieldTwo = new FieldController();
+            
             while (gameOn) {
 
                 /*if (playerOne.playerInGameID == turn && playerOne.hasMessage) {
@@ -112,7 +119,7 @@ public class GameServer implements Runnable {
                 break; //просто сообщение - переслать в чат
             case "serv":
                 serviceMessage(message[1], sender);
-                break; //сервисноее сообщение - начало игры, конец игры, дисконнект, передача игрового поля итд
+                break; //сервисное сообщение - начало игры, конец игры, дисконнект, передача игрового поля итд
         }
     }
 

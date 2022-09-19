@@ -1,6 +1,6 @@
 package client.GUI;
 
-import client.Collision;
+import client.Client;
 import client.FightFieldController;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -30,8 +30,10 @@ public class GameScreen extends JPanel implements Runnable {
     FightFieldGUI fightFieldGUI;
     FightFieldController fightFieldController;
     ShipHangar shipHangar;
+    Client client;
 
-    GameScreen() {
+    GameScreen(Client client) {
+        this.client = client;
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
         fightFieldController = new FightFieldController(gridSize);
@@ -94,6 +96,7 @@ public class GameScreen extends JPanel implements Runnable {
         if (draggedSize == 0) {
             //fightFieldController.getShoot(cellIndex);
             int removeResult = fightFieldController.removeShip(cellIndex);
+            client.sendMessage("тыкнули в поле");
             draggedSize = removeResult;
             draggedForm = 0;
         } else {

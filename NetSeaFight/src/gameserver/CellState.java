@@ -1,12 +1,10 @@
-package client;
-
-import java.io.Serializable;
+package gameserver;
 
 /**
  *
  * @author GAV
  */
-public enum CellState implements Serializable{
+public enum CellState {
     //0 - пустая клетка
     //1 - корабль
     //2 - аура корабля (рисуется на пустых клетках после уничтожения корабля)

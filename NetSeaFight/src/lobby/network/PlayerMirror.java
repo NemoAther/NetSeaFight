@@ -14,14 +14,16 @@ public class PlayerMirror implements Runnable {
     private PrintWriter out;
     private boolean working = true;
     private GameServer game = null;
+    ObjectInputStream objectReceiver;
     volatile int playerInGameID = 0;
     //volatile String message;
     //volatile boolean hasMessage = false;
 
     public PlayerMirror(Socket s) throws IOException {
         socket = s;
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        //in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+        
         Thread player = new Thread(this);
         player.start();
     }
@@ -30,9 +32,15 @@ public class PlayerMirror implements Runnable {
     public void run() {
         try {
             while (working) {
-                String msg = in.readLine();
-                msg = processingMessage(msg);
-                
+                //String msg = in.readLine();
+                //msg = processingMessage(msg);
+                 try {
+                    objectReceiver = new ObjectInputStream(socket.getInputStream());
+                    System.out.println("что-то принялось");
+                    Object obj = objectReceiver.readObject();
+                } catch (ClassNotFoundException ex) {
+                    System.out.println("что-то не то принялось");
+                }
 
                 /*System.out.println("line read: " + str);
                 if (str.equals("exit")) {

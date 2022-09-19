@@ -10,26 +10,41 @@ import java.net.*;
  */
 public class Client {
 
-    public static void main(String[] args) throws IOException {
-        MainWindow mainWindow = new MainWindow();
-        mainWindow.createGUI();
+    MainWindow mainWindow;
 
-        System.out.println("Клиент стартовал");
-        String address = "localhost";
-        int port = 6666;
-        Socket server = new Socket(address, port);
+    String address = "localhost";
+    int port = 6666;
+    Socket server;
 
-        ClientReceiver receiver = new ClientReceiver(server);
-        Thread clientReceiver = new Thread(receiver);
+    ClientReceiver receiver;
+    Thread clientReceiver;
+
+    PrintWriter sender;
+    ObjectOutputStream objectSender;
+    BufferedReader input;
+
+    String fuser;
+
+    public Client() throws IOException {
+        System.out.println("Клиент стартует 1");
+        address = "localhost";
+        port = 6666;
+        server = new Socket(address, port);
+        objectSender = new ObjectOutputStream(server.getOutputStream());
+        System.out.println("Клиент стартует 2");
+        receiver = new ClientReceiver(server);
+        clientReceiver = new Thread(receiver);
         clientReceiver.start();
-
+        System.out.println("Клиент стартует 3");
         System.out.println("Соединяемся с сервером " + address + ":" + port);
 
-        PrintWriter sender = new PrintWriter(server.getOutputStream(), true);
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        sender = new PrintWriter(server.getOutputStream(), true);
+        input = new BufferedReader(new InputStreamReader(System.in));
 
         String fuser;
 
+        mainWindow = new MainWindow();
+        mainWindow.createGUI(this);
         while (true) {
             fuser = input.readLine();
             if (fuser != null) {
@@ -37,10 +52,23 @@ public class Client {
                 if (fuser.equalsIgnoreCase("exit")) {
                     break;
                 }
-            }//без попытки отправки сообщения мы не можем получить то, что пришло. надо делать 2 потока
+            }
         }
         sender.close();
         input.close();
         server.close();
+    }
+
+    public void sendMessage(String msg) {
+
+        try {
+            objectSender.writeObject(CellState.EMPTY);
+            System.out.println("записался объект");
+            objectSender.flush();
+            System.out.println("сделали флаш");
+
+        } catch (IOException ex) {
+            System.out.println(ex + " не записался объект");
+        }
     }
 }

@@ -1,33 +1,32 @@
-package client;
-
+package gameserver;
 
 /**
  *
  * @author GAV
  */
-public class FightFieldController {
+public class FieldController {
 
     private final CellState[][] field = new CellState[10][10];
-    private final int gridSize;
+    private final int gridSize = 10;
+    private boolean isFilled = false;
 
-    public FightFieldController(int gridSize) {
+    FieldController() {
         for (int columns = 0; columns < gridSize; columns++) {
             for (int rows = 0; rows < gridSize; rows++) {
                 field[columns][rows] = CellState.EMPTY;
             }
         }
-        this.gridSize = gridSize;
     }
 
-    public boolean addShip(int[] cellIndex, int shipSize, int shipForm) {
+    boolean addShip(int[] cellIndex, int shipSize, int shipForm) {
         return checkFreeSpace(cellIndex, shipSize, shipForm);
     }
 
-    public CellState[][] getField() {
+    CellState[][] getField() {
         return field;
     }
 
-    public int removeShip(int[] cellIndex) {
+    int removeShip(int[] cellIndex) {
         if (field[cellIndex[0]][cellIndex[1]] == CellState.SHIP) {
             int[][] shipCells = new int[1][2];
             shipCells[0] = cellIndex;
@@ -237,14 +236,15 @@ public class FightFieldController {
             }
         }
     }
-    public void getShoot(int[] cellIndex) {
-        if (field[cellIndex[0]][cellIndex[1]] == CellState.SHIP) {
-            field[cellIndex[0]][cellIndex[1]] = CellState.HIT;
-            System.out.println("попал!");
+
+    CellState[][] getFilledField() {
+        if (isFilled) {
+            return field;
         }
-        if (field[cellIndex[0]][cellIndex[1]] == CellState.EMPTY) {
-            field[cellIndex[0]][cellIndex[1]] = CellState.MISS;
-            System.out.println("промазал!");
-        }
+        return null;
+    }
+
+    void setFilled(boolean isFilled) {
+        this.isFilled = isFilled;
     }
 }

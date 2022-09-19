@@ -1,5 +1,6 @@
 package client.GUI;
 
+import client.Client;
 import java.awt.FlowLayout;
 import javax.swing.JFrame;
 
@@ -9,13 +10,9 @@ import javax.swing.JFrame;
  */
 public class MainWindow extends JFrame {
 
-    public MainWindow() {
-
-    }
-
-    public void createGUI() {
+    public void createGUI(Client client) {
         setLayout(new FlowLayout());
-        GameScreen gameScreen = new GameScreen();
+        GameScreen gameScreen = new GameScreen(client);
         add(gameScreen);
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);

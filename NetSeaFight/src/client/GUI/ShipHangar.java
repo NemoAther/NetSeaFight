@@ -31,7 +31,11 @@ public class ShipHangar {
     }
 
     public void drawShip(Graphics g, int positionX, int positionY, int shipSize, int shipForm) {
-        g.setColor(Color.white);
+        if (controller.getShipQuantity(shipSize)) {
+            g.setColor(Color.white);
+        } else {
+            g.setColor(Color.gray);
+        }
         switch (shipForm) {
             case 0:
                 drawHorizontal(g, positionX, positionY, shipSize);
