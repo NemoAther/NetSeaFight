@@ -3,6 +3,7 @@ package client;
 import client.GUI.MainWindow;
 import java.io.*;
 import java.net.*;
+import lobby.network.Message;
 
 /**
  *
@@ -19,54 +20,61 @@ public class Client {
     ClientReceiver receiver;
     Thread clientReceiver;
 
-    PrintWriter sender;
     ObjectOutputStream objectSender;
     BufferedReader input;
+    boolean gameProcess = true;
 
-    String fuser;
-
-    public Client() throws IOException {
-        System.out.println("Клиент стартует 1");
+    public Client() {
+        System.out.println("Клиент стартует 0");
         address = "localhost";
         port = 6666;
-        server = new Socket(address, port);
-        objectSender = new ObjectOutputStream(server.getOutputStream());
-        System.out.println("Клиент стартует 2");
-        receiver = new ClientReceiver(server);
+        try {
+            server = new Socket(address, port);
+        } catch (IOException ex) {
+            System.out.println(ex + " сокет не открылся");
+        }
+        System.out.println("Клиент стартует 1");
+            receiver = new ClientReceiver(server);
+        System.out.println("Клиент стартует 11");
+        try {
+            objectSender = new ObjectOutputStream(server.getOutputStream());
+        } catch (IOException ex) {
+            System.out.println(ex + " objectSender не открылся");
+        }
         clientReceiver = new Thread(receiver);
         clientReceiver.start();
-        System.out.println("Клиент стартует 3");
         System.out.println("Соединяемся с сервером " + address + ":" + port);
-
-        sender = new PrintWriter(server.getOutputStream(), true);
         input = new BufferedReader(new InputStreamReader(System.in));
-
-        String fuser;
-
         mainWindow = new MainWindow();
         mainWindow.createGUI(this);
-        while (true) {
-            fuser = input.readLine();
-            if (fuser != null) {
-                sender.println(fuser);
-                if (fuser.equalsIgnoreCase("exit")) {
-                    break;
+        while (gameProcess) {
+            try {
+                String message = input.readLine();
+                if (message != null) {
+                    try {
+                        objectSender.writeObject(new Message("String", message));
+                        objectSender.flush();
+                    } catch (IOException ex) {
+                        System.out.println(ex + " не записался объект");
+                    }
                 }
+            } catch (IOException ex) {
+                System.out.println(ex + " message не прочитался с клавиатуры");
             }
         }
-        sender.close();
-        input.close();
-        server.close();
+
+        try {
+            input.close();
+            server.close();
+        } catch (IOException ex) {
+            System.out.println(ex + " сокет не закрылся");
+        }
     }
 
     public void sendMessage(String msg) {
-
         try {
-            objectSender.writeObject(CellState.EMPTY);
-            System.out.println("записался объект");
+            objectSender.writeObject(new Message("String", "мессадж по клику на поле"));
             objectSender.flush();
-            System.out.println("сделали флаш");
-
         } catch (IOException ex) {
             System.out.println(ex + " не записался объект");
         }

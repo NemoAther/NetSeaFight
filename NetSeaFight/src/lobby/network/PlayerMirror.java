@@ -3,6 +3,9 @@ package lobby.network;
 import gameserver.GameServer;
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author GAV
@@ -15,6 +18,7 @@ public class PlayerMirror implements Runnable {
     private boolean working = true;
     private GameServer game = null;
     ObjectInputStream objectReceiver;
+    ObjectOutputStream objectSender;
     volatile int playerInGameID = 0;
     //volatile String message;
     //volatile boolean hasMessage = false;
@@ -23,7 +27,8 @@ public class PlayerMirror implements Runnable {
         socket = s;
         //in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-        
+        objectReceiver = new ObjectInputStream(socket.getInputStream());
+        objectSender = new ObjectOutputStream(socket.getOutputStream());
         Thread player = new Thread(this);
         player.start();
     }
@@ -31,28 +36,13 @@ public class PlayerMirror implements Runnable {
     @Override
     public void run() {
         try {
-            while (working) {
-                //String msg = in.readLine();
-                //msg = processingMessage(msg);
-                 try {
-                    objectReceiver = new ObjectInputStream(socket.getInputStream());
-                    System.out.println("что-то принялось");
-                    Object obj = objectReceiver.readObject();
-                } catch (ClassNotFoundException ex) {
-                    System.out.println("что-то не то принялось");
-                }
 
-                /*System.out.println("line read: " + str);
-                if (str.equals("exit")) {
-                    working = false;
+            while (working) {
+                try {
+                    processingMessage((Message) objectReceiver.readObject());
+                } catch (ClassNotFoundException ex) {
+                    System.out.println(ex + " что-то не то принялось");
                 }
-                if (game != null && !hasMessage && game.turn == playerInGameID) {
-                    message = str;
-                    System.out.println("Отправлено: " + message);
-                    hasMessage = true;
-                } else {
-                    out.println("Не твой ход, а ты тут пишешь");
-                }*/
             }
             System.out.println("Соединение закрыто");
         } catch (IOException e) {
@@ -66,7 +56,22 @@ public class PlayerMirror implements Runnable {
         }
     }
 
-    String processingMessage(String rawMessage) {
+    void processingMessage(Message message) {
+        switch (message.getType()) {
+            case "String":
+                String msg = (String) message.getData();
+                game.chatMessage(msg, playerInGameID);
+                System.out.println("отправили меседж из миррора");
+                break;
+            case "arrayInt":
+                int[][] field = (int[][]) message.getData();
+                break;
+            default:
+                break;
+        }
+    }
+
+    String processingMessageOld(String rawMessage) {
 
         String[] message = rawMessage.split(";"); //добавить ограничитель, чтобы делил только по первому вхождению
         String result = null;
@@ -86,7 +91,9 @@ public class PlayerMirror implements Runnable {
                 result = game.serviceMessage(message[1], playerInGameID);
                 //}
                 break; //сервисноее сообщение - начало игры, конец игры, дисконнект, передача игрового поля итд
-            default: result = game.chatMessage(message[0], playerInGameID); result = "некорректное сообщение";
+            default:
+                result = game.chatMessage(message[0], playerInGameID);
+                result = "некорректное сообщение";
         }
         return result;
     }
@@ -104,8 +111,14 @@ public class PlayerMirror implements Runnable {
     }
 
     public void setMessage(String message) {
-        out.println(message);
-        out.flush();
+        try {
+            objectSender.writeObject(new Message("String", message));
+            objectSender.flush();
+        } catch (IOException ex) {
+            System.out.println(ex + " objectSender не справился");
+        }
+        //out.println(message);
+        //out.flush();
     }
 
     public void setPlayerInGameID(int playerInGameID) {
@@ -115,5 +128,5 @@ public class PlayerMirror implements Runnable {
     public int getPlayerInGameID() {
         return playerInGameID;
     }
-    
+
 }

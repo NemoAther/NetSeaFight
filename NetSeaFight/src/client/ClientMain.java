@@ -1,14 +1,12 @@
 package client;
 
-import java.io.IOException;
-
 /**
  *
  * @author GAV
  */
 public class ClientMain {
     
-public static void main(String[] args) throws IOException{
+public static void main(String[] args) {
         Client client = new Client();
 }
     
