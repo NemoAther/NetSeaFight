@@ -1,13 +1,12 @@
 package client;
 
-
 /**
  *
  * @author GAV
  */
 public class FightFieldController {
 
-    private final CellState[][] field = new CellState[10][10];
+    private volatile CellState[][] field = new CellState[10][10];
     private final int gridSize;
 
     public FightFieldController(int gridSize) {
@@ -23,7 +22,7 @@ public class FightFieldController {
         return checkFreeSpace(cellIndex, shipSize, shipForm);
     }
 
-    public CellState[][] getField() {
+    public synchronized CellState[][] getField() {
         return field;
     }
 
@@ -237,6 +236,7 @@ public class FightFieldController {
             }
         }
     }
+
     public void getShoot(int[] cellIndex) {
         if (field[cellIndex[0]][cellIndex[1]] == CellState.SHIP) {
             field[cellIndex[0]][cellIndex[1]] = CellState.HIT;

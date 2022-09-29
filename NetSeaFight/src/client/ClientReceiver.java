@@ -1,11 +1,8 @@
 package client;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lobby.network.Message;
 
 /**
@@ -21,8 +18,6 @@ public class ClientReceiver implements Runnable {
     ClientReceiver(Socket server) {
         this.server = server;
         System.out.println("receiver стартует 1");
-        //objectReceiver = new ObjectInputStream(server.getInputStream());
-        //System.out.println("Клиент стартует 2");
     }
 
     @Override

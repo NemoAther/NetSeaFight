@@ -1,10 +1,9 @@
 package lobby.network;
 
+import client.CellState;
 import gameserver.GameServer;
 import java.io.*;
 import java.net.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -13,20 +12,14 @@ import java.util.logging.Logger;
 public class PlayerMirror implements Runnable {
 
     private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
     private boolean working = true;
     private GameServer game = null;
     ObjectInputStream objectReceiver;
     ObjectOutputStream objectSender;
     volatile int playerInGameID = 0;
-    //volatile String message;
-    //volatile boolean hasMessage = false;
 
     public PlayerMirror(Socket s) throws IOException {
         socket = s;
-        //in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
         objectReceiver = new ObjectInputStream(socket.getInputStream());
         objectSender = new ObjectOutputStream(socket.getOutputStream());
         Thread player = new Thread(this);
@@ -39,7 +32,11 @@ public class PlayerMirror implements Runnable {
 
             while (working) {
                 try {
-                    processingMessage((Message) objectReceiver.readObject());
+                    Object obj = objectReceiver.readObject();
+                    System.out.println(obj);
+                    //processingMessage((Message) objectReceiver.readObject());
+                    processingMessage((Message) obj);
+
                 } catch (ClassNotFoundException ex) {
                     System.out.println(ex + " что-то не то принялось");
                 }
@@ -63,47 +60,20 @@ public class PlayerMirror implements Runnable {
                 game.chatMessage(msg, playerInGameID);
                 System.out.println("отправили меседж из миррора");
                 break;
-            case "arrayInt":
-                int[][] field = (int[][]) message.getData();
+            case "field":
+                CellState[][] field = (CellState[][]) message.getData();
+                System.out.println("получено в мироре");
+                for (int i = 0; i < field.length; i++) {
+                    for (int j = 0; j < field[0].length; j++) {
+                        System.out.print(field[j][i] + " ");
+                    }
+                    System.out.println();
+                }
+                System.out.println();
                 break;
             default:
                 break;
         }
-    }
-
-    String processingMessageOld(String rawMessage) {
-
-        String[] message = rawMessage.split(";"); //добавить ограничитель, чтобы делил только по первому вхождению
-        String result = null;
-        switch (message[0]) {
-            case "shoot":
-                //synchronized (this) {
-                result = game.shoot(message[1], playerInGameID);
-                //}
-                break; //выстрел: координаты
-            case "msg":
-                //synchronized (this) {
-                result = game.chatMessage(message[1], playerInGameID);
-                //}
-                break; //просто сообщение - переслать в чат
-            case "serv":
-                //synchronized (this) {
-                result = game.serviceMessage(message[1], playerInGameID);
-                //}
-                break; //сервисноее сообщение - начало игры, конец игры, дисконнект, передача игрового поля итд
-            default:
-                result = game.chatMessage(message[0], playerInGameID);
-                result = "некорректное сообщение";
-        }
-        return result;
-    }
-
-    public BufferedReader getIn() {
-        return in;
-    }
-
-    public PrintWriter getOut() {
-        return out;
     }
 
     public void setGame(GameServer game) {
@@ -117,8 +87,6 @@ public class PlayerMirror implements Runnable {
         } catch (IOException ex) {
             System.out.println(ex + " objectSender не справился");
         }
-        //out.println(message);
-        //out.flush();
     }
 
     public void setPlayerInGameID(int playerInGameID) {

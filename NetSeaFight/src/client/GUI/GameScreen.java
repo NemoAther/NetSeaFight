@@ -1,5 +1,6 @@
 package client.GUI;
 
+import client.CellState;
 import client.Client;
 import client.FightFieldController;
 import java.awt.Color;
@@ -96,7 +97,8 @@ public class GameScreen extends JPanel implements Runnable {
         if (draggedSize == 0) {
             //fightFieldController.getShoot(cellIndex);
             int removeResult = fightFieldController.removeShip(cellIndex);
-            client.sendMessage("тыкнули в поле");
+            System.out.println("тыкнули в поле" + cellIndex[0] + " " + cellIndex[1]);
+            client.sendMessage("тыкнули в поле" + cellIndex[0] + " " + cellIndex[1]);
             draggedSize = removeResult;
             draggedForm = 0;
         } else {
@@ -105,6 +107,17 @@ public class GameScreen extends JPanel implements Runnable {
                 draggedSize = 0;
                 draggedForm = 0;
             }
+            CellState[][] msg;
+            CellState[][] msg2 = new CellState[10][10];
+            synchronized (this) {
+                msg = fightFieldController.getField();
+            }
+            for (int i = 0; i < msg.length; i++) {
+                for (int j = 0; j < msg[0].length; j++) {
+                    msg2[j][i] = msg[j][i];
+                }
+            }
+            client.sendMessage(msg2);
         }
     }
 

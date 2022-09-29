@@ -34,7 +34,7 @@ public class Client {
             System.out.println(ex + " сокет не открылся");
         }
         System.out.println("Клиент стартует 1");
-            receiver = new ClientReceiver(server);
+        receiver = new ClientReceiver(server);
         System.out.println("Клиент стартует 11");
         try {
             objectSender = new ObjectOutputStream(server.getOutputStream());
@@ -73,7 +73,18 @@ public class Client {
 
     public void sendMessage(String msg) {
         try {
-            objectSender.writeObject(new Message("String", "мессадж по клику на поле"));
+            System.out.println("отправлено на сервер string");
+            objectSender.writeObject(new Message("String", msg));
+            objectSender.flush();
+        } catch (IOException ex) {
+            System.out.println(ex + " не записался объект");
+        }
+    }
+
+    public void sendMessage(CellState[][] msg) {
+        try {
+            
+            objectSender.writeObject(new Message("field", msg));
             objectSender.flush();
         } catch (IOException ex) {
             System.out.println(ex + " не записался объект");
